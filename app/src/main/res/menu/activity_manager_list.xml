@@ -22,4 +22,9 @@
         android:id="@+id/action_start"
         android:title="Start"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_stop"
+        android:title="Stop"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -85,6 +85,8 @@ public class ManagerListActivity extends AppCompatActivity {
 			KernelBase.getKernel().addListener(mKernelListener);
 		}
 		updateKernelStatus();
+		supportInvalidateOptionsMenu();
+
 		if (KernelBase.isKernelUpRunning()) {
 			mAdapter.initManagers();
 		}
@@ -107,19 +109,33 @@ public class ManagerListActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_manager_list, menu);
 		menu.findItem(R.id.action_start).setVisible(!KernelBase.isKernelUpRunning());
+		menu.findItem(R.id.action_stop).setVisible(KernelBase.isKernelUpRunning());
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_start:
-				startService(new Intent(this, AutomateAccessibilityService.class));
+			case R.id.action_start: {
+				setKernelDisabled(false);
 				return true;
+			}
 
-			default:
+			case R.id.action_stop: {
+				setKernelDisabled(true);
+				return true;
+			}
+
+			default: {
 				return super.onOptionsItemSelected(item);
+			}
 		}
+	}
+
+	private void setKernelDisabled(boolean disabled) {
+		Intent intent = new Intent(AutomateAccessibilityService.ACTION_SET_KERNEL_DISABLED_STATE);
+		intent.putExtra(AutomateAccessibilityService.EXTRA_KERNEL_DISABLED_VALUE, disabled);
+		sendBroadcast(intent);
 	}
 
 	private void updateKernelStatus() {

@@ -15,14 +15,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <receiver
-            android:name=".service.DisableKernelBroadcastListener"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="at.fhhagenberg.mint.automate.android.accessibility.SET_KERNEL_DISABLED_STATE"/>
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
