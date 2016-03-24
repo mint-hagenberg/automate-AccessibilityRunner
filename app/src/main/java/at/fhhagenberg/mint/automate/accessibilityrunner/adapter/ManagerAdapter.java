@@ -34,9 +34,12 @@ import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.Manager;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.annotation.ExternalManager;
 
 /**
- * Adapter to list all managers.
+ * Adapter to list all managers registered in the Kernel.
  */
 public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHolder> {
+	/**
+	 * View holder pattern from the recycler view.
+	 */
 	public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
 		public TextView mTextView;
 		public SwitchCompat mCheckbox;
@@ -69,6 +72,9 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
 
 	private List<Manager> mManager;
 
+	/**
+	 * Constructor.
+	 */
 	public ManagerAdapter() {
 		mManager = new ArrayList<>();
 		if (KernelBase.isInitialized()) {
@@ -76,6 +82,9 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
 		}
 	}
 
+	/**
+	 * Allows to get the set managers from the kernel again and relpace the displayed list.
+	 */
 	public void initManagers() {
 		mManager.clear();
 		for (int i = 0, len = KernelBase.getKernel().numManager(); i < len; ++i) {

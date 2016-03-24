@@ -26,21 +26,24 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.kernel.AndroidKernel;
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
-import at.fhhagenberg.mint.automate.accessibilityrunner.service.KernelListenerService;
 import at.fhhagenberg.mint.automate.accessibilityrunner.ui.ManagerListActivity;
+import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.AbstractManager;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelListener;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.ManagerException;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.name.Id;
 
 /**
- *
+ * Manager that will show a sticky notification to open the app settings or stop the kernel from running.
  */
 public class RunningNotificationManager extends AbstractManager implements KernelListener {
 	public static Id ID = new Id(RunningNotificationManager.class);
 
 	private static final int NOTIFICATION_KERNEL_RUNNING = 1000;
 
+	/**
+	 * Constructor.
+	 */
 	public RunningNotificationManager() {
 	}
 
@@ -68,8 +71,9 @@ public class RunningNotificationManager extends AbstractManager implements Kerne
 		Intent clickIntent = new Intent(context, ManagerListActivity.class);
 		PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, 0);
 
-		Intent stopIntent = new Intent(context, KernelListenerService.class);
-		PendingIntent stopPendingIntent = PendingIntent.getService(context, 0, stopIntent, 0);
+		Intent stopIntent = new Intent(AutomateAccessibilityService.ACTION_SET_KERNEL_DISABLED_STATE);
+		stopIntent.putExtra(AutomateAccessibilityService.EXTRA_KERNEL_DISABLED_VALUE, true);
+		PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, 0);
 
 		Notification notification = new NotificationCompat.Builder(context)
 				.setSmallIcon(R.drawable.ic_running_notification)

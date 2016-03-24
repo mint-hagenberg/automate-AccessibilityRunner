@@ -17,38 +17,29 @@
 
 package at.fhhagenberg.mint.automate.accessibilityrunner.service;
 
-import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
 
 
 /**
- *
+ * Broadcast receiver that can stop the kernel via the correct accessibility service call.
  */
-public class KernelListenerService extends IntentService {
-	private static final int NOTIFICATION_KERNEL_RUNNING = 1000;
-
+public class DisableKernelBroadcastListener extends BroadcastReceiver {
 	/**
-	 *
+	 * Constructor.
 	 */
-	public static void startAction(Context context) {
-		Intent intent = new Intent(context, KernelListenerService.class);
-		context.startService(intent);
-	}
-
-	public KernelListenerService() {
-		super("KernelListenerService");
+	public DisableKernelBroadcastListener() {
+		// Nothing to do here.
 	}
 
 	@Override
-	public void onCreate() {
-		super.onCreate();
-	}
-
-	@Override
-	protected void onHandleIntent(Intent intent) {
-		AutomateAccessibilityService.disableKernel(this);
+	public void onReceive(Context context, Intent intent) {
+		if (intent.getAction().equals(AutomateAccessibilityService.ACTION_SET_KERNEL_DISABLED_STATE)) {
+			LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+		}
 	}
 }
