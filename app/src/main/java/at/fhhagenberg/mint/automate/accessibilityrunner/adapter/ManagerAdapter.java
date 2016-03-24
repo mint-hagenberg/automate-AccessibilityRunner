@@ -61,11 +61,7 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
 			}
 
 			if (mManager != null) {
-				if (mManager.getStatus() == Manager.Status.STARTED) {
-					mManager.pause();
-				} else {
-					mManager.resume();
-				}
+				mManager.setDisabled(mManager.getStatus() == Manager.Status.STARTED);
 			}
 		}
 	}
