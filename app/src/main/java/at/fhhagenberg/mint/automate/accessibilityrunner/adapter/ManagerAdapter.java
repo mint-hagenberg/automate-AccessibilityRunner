@@ -26,7 +26,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelBase;
@@ -37,73 +39,74 @@ import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.annotation.Ext
  * Adapter to list all managers registered in the Kernel.
  */
 public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHolder> {
-	/**
-	 * View holder pattern from the recycler view.
-	 */
-	public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
-		public TextView mTextView;
-		public SwitchCompat mCheckbox;
+    /**
+     * View holder pattern from the recycler view.
+     */
+    public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
+        public TextView mTextView;
+        public SwitchCompat mCheckbox;
 
-		public Manager mManager;
+        public Manager mManager;
 
-		public ViewHolder(View v) {
-			super(v);
-			mTextView = (TextView) v.findViewById(R.id.text);
-			mCheckbox = (SwitchCompat) v.findViewById(R.id.checkbox);
-			mCheckbox.setOnCheckedChangeListener(this);
-		}
+        public ViewHolder(View v) {
+            super(v);
+            mTextView = (TextView) v.findViewById(R.id.text);
+            mCheckbox = (SwitchCompat) v.findViewById(R.id.checkbox);
+            mCheckbox.setOnCheckedChangeListener(this);
+        }
 
-		@Override
-		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			if (mManager != null) {
-				mManager.setDisabled(!isChecked);
-			}
-		}
-	}
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mManager != null) {
+                mManager.setDisabled(!isChecked);
+            }
+        }
+    }
 
-	private List<Manager> mManager;
+    private List<Manager> mManager;
 
-	/**
-	 * Constructor.
-	 */
-	public ManagerAdapter() {
-		mManager = new ArrayList<>();
-		if (KernelBase.isInitialized()) {
-			initManagers();
-		}
-	}
+    /**
+     * Constructor.
+     */
+    public ManagerAdapter() {
+        mManager = new ArrayList<>();
+        if (KernelBase.isInitialized()) {
+            initManagers();
+        }
+    }
 
-	/**
-	 * Allows to get the set managers from the kernel again and relpace the displayed list.
-	 */
-	public void initManagers() {
-		mManager.clear();
-		for (int i = 0, len = KernelBase.getKernel().numManager(); i < len; ++i) {
-			Manager manager = KernelBase.getKernel().getManager(i);
-			if (manager.getClass().isAnnotationPresent(ExternalManager.class)) {
-				mManager.add(manager);
-			}
-		}
-		notifyDataSetChanged();
-	}
+    /**
+     * Allows to get the set managers from the kernel again and relpace the displayed list.
+     */
+    public void initManagers() {
+        mManager.clear();
+        for (int i = 0, len = KernelBase.getKernel().numManager(); i < len; ++i) {
+            Manager manager = KernelBase.getKernel().getManager(i);
+            if (manager.getClass().isAnnotationPresent(ExternalManager.class)) {
+                mManager.add(manager);
+            }
+        }
+        notifyDataSetChanged();
+    }
 
-	@Override
-	public int getItemCount() {
-		return mManager.size();
-	}
+    @Override
+    public int getItemCount() {
+        return mManager.size();
+    }
 
-	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View v = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.listitem_manager, parent, false);
-		return new ViewHolder(v);
-	}
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
-		holder.mManager = mManager.get(position);
-		holder.mTextView.setText(holder.mManager.getName());
-		holder.mCheckbox.setChecked(holder.mManager.getStatus() == Manager.Status.STARTED);
-		holder.mCheckbox.setVisibility(holder.mManager.getClass().getAnnotation(ExternalManager.class).allowsUserStatusChange() ? View.VISIBLE : View.GONE);
-	}
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.listitem_manager, parent, false);
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mManager = mManager.get(position);
+        holder.mTextView.setText(holder.mManager.getName());
+        holder.mCheckbox.setChecked(holder.mManager.getStatus() == Manager.Status.STARTED);
+        holder.mCheckbox.setVisibility(holder.mManager.getClass().getAnnotation(ExternalManager.class).allowsUserStatusChange() ? View.VISIBLE : View.GONE);
+    }
 }
