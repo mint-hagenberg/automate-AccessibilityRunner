@@ -55,13 +55,8 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			if (mCheckbox.getTag() != null) {
-				mCheckbox.setTag(null);
-				return;
-			}
-
 			if (mManager != null) {
-				mManager.setDisabled(mManager.getStatus() == Manager.Status.STARTED);
+				mManager.setDisabled(!isChecked);
 			}
 		}
 	}
@@ -108,7 +103,6 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		holder.mManager = mManager.get(position);
 		holder.mTextView.setText(holder.mManager.getName());
-		holder.mCheckbox.setTag(true);
 		holder.mCheckbox.setChecked(holder.mManager.getStatus() == Manager.Status.STARTED);
 		holder.mCheckbox.setVisibility(holder.mManager.getClass().getAnnotation(ExternalManager.class).allowsUserStatusChange() ? View.VISIBLE : View.GONE);
 	}
