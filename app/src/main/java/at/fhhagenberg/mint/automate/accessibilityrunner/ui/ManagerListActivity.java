@@ -25,6 +25,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.FileExportManager;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.action.RequestFileExportIntentAction;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.impl.CSVFileExportManager;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.KernelManagerHelper;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.PropertiesHelper;
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.accessibilityrunner.adapter.ManagerAdapter;
 import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
@@ -35,115 +40,121 @@ import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelListener
  * A simple activity that lists all registered managers with the possibility to disable or enable them.
  */
 public class ManagerListActivity extends AppCompatActivity {
-	private RecyclerView mRecyclerView;
-	private ManagerAdapter mAdapter;
-	private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView mRecyclerView;
+    private ManagerAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
-	private KernelListener mKernelListener = new KernelListener() {
-		@Override
-		public void startupFinished() {
-			updateKernelStatus();
-			mAdapter.initManagers();
-		}
+    private KernelListener mKernelListener = new KernelListener() {
+        @Override
+        public void startupFinished() {
+            updateKernelStatus();
+            mAdapter.initManagers();
+        }
 
-		@Override
-		public void onPrepareShutdown() {
-			getSupportActionBar().setTitle("Status: shutting down");
-		}
+        @Override
+        public void onPrepareShutdown() {
+            getSupportActionBar().setTitle("Status: shutting down");
+        }
 
-		@Override
-		public void onShutdown() {
-			updateKernelStatus();
-		}
-	};
+        @Override
+        public void onShutdown() {
+            updateKernelStatus();
+        }
+    };
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_manager_list);
-		mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_manager_list);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-		mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
-		mLayoutManager = new LinearLayoutManager(this);
-		mRecyclerView.setLayoutManager(mLayoutManager);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
-		mAdapter = new ManagerAdapter();
-		mRecyclerView.setAdapter(mAdapter);
-	}
+        mAdapter = new ManagerAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if (!SetupDialogFragment.isInstalledAsAccessibilityService(this)) {
-			SetupDialogFragment dialogFragment = new SetupDialogFragment();
-			dialogFragment.show(getSupportFragmentManager(), "setup");
-		}
+        if (!SetupDialogFragment.isInstalledAsAccessibilityService(this)) {
+            SetupDialogFragment dialogFragment = new SetupDialogFragment();
+            dialogFragment.show(getSupportFragmentManager(), "setup");
+        }
 
-		if (KernelBase.isInitialized()) {
-			KernelBase.getKernel().addListener(mKernelListener);
-		}
-		updateKernelStatus();
-		supportInvalidateOptionsMenu();
+        if (KernelBase.isInitialized()) {
+            KernelBase.getKernel().addListener(mKernelListener);
+        }
+        updateKernelStatus();
+        supportInvalidateOptionsMenu();
 
-		if (KernelBase.isKernelUpRunning()) {
-			mAdapter.initManagers();
-		}
-	}
+        if (KernelBase.isKernelUpRunning()) {
+            mAdapter.initManagers();
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-		if (KernelBase.isInitialized()) {
-			try {
-				KernelBase.getKernel().removeListener(mKernelListener);
-			} catch (Exception ex) {
-				// Ignore
-			}
-		}
-	}
+        if (KernelBase.isInitialized()) {
+            try {
+                KernelBase.getKernel().removeListener(mKernelListener);
+            } catch (Exception ex) {
+                // Ignore
+            }
+        }
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_manager_list, menu);
-		menu.findItem(R.id.action_start).setVisible(!KernelBase.isKernelUpRunning());
-		menu.findItem(R.id.action_stop).setVisible(KernelBase.isKernelUpRunning());
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_manager_list, menu);
+        menu.findItem(R.id.action_start).setVisible(!KernelBase.isKernelUpRunning());
+        menu.findItem(R.id.action_stop).setVisible(KernelBase.isKernelUpRunning());
+        menu.findItem(R.id.action_export).setVisible(KernelBase.isKernelUpRunning() && PropertiesHelper.getProperty(this, "fileexport.enabled", Boolean.class, false));
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_start: {
-				setKernelDisabled(false);
-				return true;
-			}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_start: {
+                setKernelDisabled(false);
+                return true;
+            }
 
-			case R.id.action_stop: {
-				setKernelDisabled(true);
-				return true;
-			}
+            case R.id.action_stop: {
+                setKernelDisabled(true);
+                return true;
+            }
 
-			default: {
-				return super.onOptionsItemSelected(item);
-			}
-		}
-	}
+            case R.id.action_export: {
+                new RequestFileExportIntentAction().execute();
+                return true;
+            }
 
-	private void setKernelDisabled(boolean disabled) {
-		Intent intent = new Intent(AutomateAccessibilityService.ACTION_SET_KERNEL_DISABLED_STATE);
-		intent.putExtra(AutomateAccessibilityService.EXTRA_KERNEL_DISABLED_VALUE, disabled);
-		sendBroadcast(intent);
-	}
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+    }
 
-	private void updateKernelStatus() {
-		if (KernelBase.isKernelUpRunning()) {
-			getSupportActionBar().setTitle("Status: running");
-		} else {
-			getSupportActionBar().setTitle("Status: stopped");
-		}
-		supportInvalidateOptionsMenu();
-	}
+    private void setKernelDisabled(boolean disabled) {
+        Intent intent = new Intent(AutomateAccessibilityService.ACTION_SET_KERNEL_DISABLED_STATE);
+        intent.putExtra(AutomateAccessibilityService.EXTRA_KERNEL_DISABLED_VALUE, disabled);
+        sendBroadcast(intent);
+    }
+
+    private void updateKernelStatus() {
+        if (KernelBase.isKernelUpRunning()) {
+            getSupportActionBar().setTitle("Status: running");
+        } else {
+            getSupportActionBar().setTitle("Status: stopped");
+        }
+        supportInvalidateOptionsMenu();
+    }
 }

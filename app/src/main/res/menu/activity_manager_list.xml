@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~     Copyright (C) 2016 Mobile Interactive Systems Research Group
   ~
   ~     This program is free software: you can redistribute it and/or modify
@@ -17,14 +16,19 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_start"
         android:title="Start"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_stop"
         android:title="Stop"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_export"
+        android:icon="@drawable/ic_action_export"
+        android:title="File Export"
+        app:showAsAction="ifRoom" />
 </menu>
