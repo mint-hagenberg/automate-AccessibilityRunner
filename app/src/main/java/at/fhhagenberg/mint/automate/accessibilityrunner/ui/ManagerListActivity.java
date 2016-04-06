@@ -49,6 +49,7 @@ public class ManagerListActivity extends AppCompatActivity {
         public void startupFinished() {
             updateKernelStatus();
             mAdapter.initManagers();
+            mAdapter.setInteractivityEnabled(true);
         }
 
         @Override
@@ -59,6 +60,7 @@ public class ManagerListActivity extends AppCompatActivity {
         @Override
         public void onShutdown() {
             updateKernelStatus();
+            mAdapter.setInteractivityEnabled(false);
         }
     };
 

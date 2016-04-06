@@ -33,6 +33,7 @@ import java.util.Map;
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelBase;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.Manager;
+import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.ManagerException;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.annotation.ExternalManager;
 
 /**
@@ -58,12 +59,21 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (mManager != null) {
-                mManager.setDisabled(!isChecked);
+                if (isChecked) {
+                    try {
+                        KernelBase.getKernel().enableManager(mManager.getId());
+                    } catch (ManagerException e) {
+                        // Ignore for now
+                    }
+                } else {
+                    KernelBase.getKernel().disableManager(mManager.getId());
+                }
             }
         }
     }
 
     private List<Manager> mManager;
+    private boolean mInteractivityEnabled = true;
 
     /**
      * Constructor.
@@ -89,6 +99,18 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    /**
+     * Set the checkboxes to enabled or disabled.
+     *
+     * @param enabled -
+     */
+    public void setInteractivityEnabled(boolean enabled) {
+        if (mInteractivityEnabled != enabled) {
+            mInteractivityEnabled = enabled;
+            notifyDataSetChanged();
+        }
+    }
+
     @Override
     public int getItemCount() {
         return mManager.size();
@@ -108,5 +130,6 @@ public class ManagerAdapter extends RecyclerView.Adapter<ManagerAdapter.ViewHold
         holder.mTextView.setText(holder.mManager.getName());
         holder.mCheckbox.setChecked(holder.mManager.getStatus() == Manager.Status.STARTED);
         holder.mCheckbox.setVisibility(holder.mManager.getClass().getAnnotation(ExternalManager.class).allowsUserStatusChange() ? View.VISIBLE : View.GONE);
+        holder.mCheckbox.setEnabled(mInteractivityEnabled);
     }
 }
