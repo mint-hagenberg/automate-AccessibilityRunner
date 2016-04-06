@@ -101,6 +101,7 @@ public class ManagerListActivity extends AppCompatActivity {
             KernelBase.getKernel().addListener(mKernelListener);
         }
         updateKernelStatus();
+        updateUserId();
         supportInvalidateOptionsMenu();
 
         if (KernelBase.isKernelUpRunning()) {
