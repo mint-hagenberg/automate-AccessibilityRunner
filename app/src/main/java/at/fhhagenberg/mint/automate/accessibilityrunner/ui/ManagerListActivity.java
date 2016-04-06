@@ -24,15 +24,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.FileExportManager;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.action.RequestFileExportIntentAction;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.impl.CSVFileExportManager;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.kernel.AndroidKernel;
+import at.fh.hagenberg.mint.automate.loggingclient.androidextension.userid.CredentialManager;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.KernelManagerHelper;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.PropertiesHelper;
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.accessibilityrunner.adapter.ManagerAdapter;
 import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
+import at.fhhagenberg.mint.automate.android.basemanager.deviceinfo.DeviceInfoManager;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelBase;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelListener;
 
@@ -44,10 +48,13 @@ public class ManagerListActivity extends AppCompatActivity {
     private ManagerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private TextView mDeviceIdText;
+
     private KernelListener mKernelListener = new KernelListener() {
         @Override
         public void startupFinished() {
             updateKernelStatus();
+            updateUserId();
             mAdapter.initManagers();
             mAdapter.setInteractivityEnabled(true);
         }
@@ -60,6 +67,7 @@ public class ManagerListActivity extends AppCompatActivity {
         @Override
         public void onShutdown() {
             updateKernelStatus();
+            updateUserId();
             mAdapter.setInteractivityEnabled(false);
         }
     };
@@ -69,6 +77,7 @@ public class ManagerListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_list);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mDeviceIdText = (TextView) findViewById(R.id.deviceIdText);
 
         mRecyclerView.setHasFixedSize(true);
 
@@ -158,5 +167,14 @@ public class ManagerListActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Status: stopped");
         }
         supportInvalidateOptionsMenu();
+    }
+
+    private void updateUserId() {
+        CredentialManager credentialManager = (CredentialManager) KernelBase.getKernel().getManager(CredentialManager.ID);
+        if (credentialManager != null) {
+            mDeviceIdText.setText("Device id: " + credentialManager.getUserId());
+        } else {
+            mDeviceIdText.setText("Device id: unknown");
+        }
     }
 }
