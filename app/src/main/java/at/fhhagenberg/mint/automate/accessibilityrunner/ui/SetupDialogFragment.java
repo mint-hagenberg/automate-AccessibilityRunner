@@ -70,7 +70,7 @@ public class SetupDialogFragment extends DialogFragment {
 	public static boolean isInstalledAsAccessibilityService(Context context) {
 		try {
 			ContentResolver contentResolver = context.getContentResolver();
-			String automateService = AutomateAccessibilityService.class.getName();
+			String automateService = context.getApplicationInfo().packageName + "/" + AutomateAccessibilityService.class.getName();
 			return Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED) == 1 && Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES).contains(automateService);
 		} catch (Settings.SettingNotFoundException e) {
 			return false;
