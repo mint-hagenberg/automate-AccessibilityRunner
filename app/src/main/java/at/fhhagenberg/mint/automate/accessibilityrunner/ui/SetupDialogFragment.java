@@ -64,6 +64,12 @@ public class SetupDialogFragment extends DialogFragment {
 		return builder.create();
 	}
 
+	@Override
+	public void onCancel(DialogInterface dialog) {
+		super.onCancel(dialog);
+		System.exit(0);
+	}
+
 	/**
 	 * @param context -
 	 * @return -
