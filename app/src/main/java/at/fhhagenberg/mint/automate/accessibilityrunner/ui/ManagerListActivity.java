@@ -62,7 +62,8 @@ public class ManagerListActivity extends AppCompatActivity {
 
 		@Override
 		public void onPrepareShutdown() {
-			getSupportActionBar().setTitle("Status: shutting down");
+			//noinspection ConstantConditions
+			getSupportActionBar().setTitle(R.string.status_shutting_down);
 		}
 
 		@Override
@@ -163,11 +164,8 @@ public class ManagerListActivity extends AppCompatActivity {
 	}
 
 	private void updateKernelStatus() {
-		if (KernelBase.isKernelUpRunning()) {
-			getSupportActionBar().setTitle("Status: running");
-		} else {
-			getSupportActionBar().setTitle("Status: stopped");
-		}
+		//noinspection ConstantConditions
+		getSupportActionBar().setTitle(KernelBase.isKernelUpRunning() ? R.string.status_running : R.string.status_stopped);
 		supportInvalidateOptionsMenu();
 	}
 
@@ -176,10 +174,10 @@ public class ManagerListActivity extends AppCompatActivity {
 		if (KernelBase.isKernelUpRunning()) {
 			credentialManager = (CredentialManager) KernelBase.getKernel().getManager(CredentialManager.ID);
 		}
+		String userId = "unknown";
 		if (credentialManager != null) {
-			mDeviceIdText.setText("Device id: " + credentialManager.getUserId());
-		} else {
-			mDeviceIdText.setText("Device id: unknown");
+			userId = credentialManager.getUserId();
 		}
+		mDeviceIdText.setText(getString(R.string.device_id_, userId));
 	}
 }

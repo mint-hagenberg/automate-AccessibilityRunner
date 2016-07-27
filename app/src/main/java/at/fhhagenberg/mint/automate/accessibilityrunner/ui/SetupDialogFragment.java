@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
 
 /**
@@ -44,8 +45,8 @@ public class SetupDialogFragment extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-				.setTitle("Complete automate setup")
-				.setMessage("Activate the Accessibility Service option in the Android settings and allow the automate Service to receive Accessibility events.")
+				.setTitle(getActivity().getString(R.string.dialog_setup_title))
+				.setMessage(getActivity().getString(R.string.dialog_setup_message))
 				.setCancelable(false)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
@@ -54,7 +55,7 @@ public class SetupDialogFragment extends DialogFragment {
 						startActivity(intent);
 					}
 				})
-				.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+				.setNegativeButton(getActivity().getString(R.string.dialog_setup_negative), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						System.exit(0);
