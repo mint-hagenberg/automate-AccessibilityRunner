@@ -109,6 +109,7 @@ public class ManagerListActivity extends AppCompatActivity {
 		if (KernelBase.isKernelUpRunning()) {
 			mAdapter.initManagers();
 		}
+		mAdapter.setInteractivityEnabled(KernelBase.isKernelUpRunning());
 	}
 
 	@Override
