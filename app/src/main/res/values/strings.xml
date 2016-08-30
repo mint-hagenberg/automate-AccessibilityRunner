@@ -25,4 +25,6 @@
     <string name="status_running">Status: running</string>
     <string name="status_stopped">Status: stopped</string>
     <string name="device_id_">Device id: %1$s</string>
+    <string name="dialog_title_file_export">File export started</string>
+    <string name="dialog_message_file_export">Saving tracked data since last file export. Please check the notification for the status.</string>
 </resources>

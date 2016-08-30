@@ -18,26 +18,26 @@
 
 package at.fhhagenberg.mint.automate.accessibilityrunner.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.FileExportManager;
+import java.util.Date;
+
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.action.RequestFileExportIntentAction;
-import at.fh.hagenberg.mint.automate.loggingclient.androidextension.fileexport.impl.CSVFileExportManager;
-import at.fh.hagenberg.mint.automate.loggingclient.androidextension.kernel.AndroidKernel;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.userid.CredentialManager;
-import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.KernelManagerHelper;
 import at.fh.hagenberg.mint.automate.loggingclient.androidextension.util.PropertiesHelper;
 import at.fhhagenberg.mint.automate.accessibilityrunner.R;
 import at.fhhagenberg.mint.automate.accessibilityrunner.adapter.ManagerAdapter;
 import at.fhhagenberg.mint.automate.android.accessibility.service.AutomateAccessibilityService;
-import at.fhhagenberg.mint.automate.android.basemanager.deviceinfo.DeviceInfoManager;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelBase;
 import at.fhhagenberg.mint.automate.loggingclient.javacore.kernel.KernelListener;
 
@@ -73,6 +73,8 @@ public class ManagerListActivity extends AppCompatActivity {
 			mAdapter.setInteractivityEnabled(false);
 		}
 	};
+
+	private long mLastExportClick = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +150,7 @@ public class ManagerListActivity extends AppCompatActivity {
 			}
 
 			case R.id.action_export: {
-				new RequestFileExportIntentAction().execute();
+				startFileExport();
 				return true;
 			}
 
@@ -156,6 +158,27 @@ public class ManagerListActivity extends AppCompatActivity {
 				return super.onOptionsItemSelected(item);
 			}
 		}
+	}
+
+	private void startFileExport() {
+		long now = new Date().getTime();
+		if (now - 1000 < mLastExportClick) {
+			return;
+		}
+		mLastExportClick = now;
+
+		new AlertDialog.Builder(this)
+				.setTitle(getString(R.string.dialog_title_file_export))
+				.setMessage(getString(R.string.dialog_message_file_export))
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// Ignore
+					}
+				})
+				.setCancelable(false)
+				.show();
+		new RequestFileExportIntentAction().execute();
 	}
 
 	private void setKernelDisabled(boolean disabled) {
