@@ -19,7 +19,7 @@
 <resources>
     <string name="app_name">automate</string>
     <string name="dialog_setup_title">Complete automate setup</string>
-    <string name="dialog_setup_message">Activate the Accessibility Service option in the Android settings and allow automate to receive Accessibility events.</string>
+    <string name="dialog_setup_message">Activate the Accessibility Service option in the Android settings and allow the service "automate" to receive Accessibility events.</string>
     <string name="dialog_setup_negative">Quit</string>
     <string name="status_shutting_down">Status: shutting down</string>
     <string name="status_running">Status: running</string>
