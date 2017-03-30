@@ -25,7 +25,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -132,7 +131,7 @@ public class ManagerListActivity extends AppCompatActivity {
 		getMenuInflater().inflate(R.menu.activity_manager_list, menu);
 		menu.findItem(R.id.action_start).setVisible(!KernelBase.isKernelUpRunning());
 		menu.findItem(R.id.action_stop).setVisible(KernelBase.isKernelUpRunning());
-		menu.findItem(R.id.action_export).setVisible(KernelBase.isKernelUpRunning() && PropertiesHelper.getProperty(this, "fileexport.enabled", Boolean.class, false));
+		menu.findItem(R.id.action_export).setVisible(KernelBase.isKernelUpRunning() && PropertiesHelper.getProperty(this, "fileexport.enabled", Boolean.class, false) && PropertiesHelper.getProperty(this, "fileexport.allowmanualexport", Boolean.class, true));
 		return super.onCreateOptionsMenu(menu);
 	}
 
