@@ -32,6 +32,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
         maven {
             url  "http://dl.bintray.com/mint-hagenberg/automate"
